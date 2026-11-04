@@ -2,6 +2,7 @@
 export default {
   // The app’s title; used in the sidebar and webpage titles.
   title: "vdsar",
+  base: "/D3_dist/",
 
   // The pages and sections in the sidebar. If you don’t specify this option,
   // all pages will be listed in alphabetical order. Listing pages explicitly
@@ -21,7 +22,6 @@ export default {
 
   // The path to the source root.
   root: "src",
-  base: "D3_dist",
   // Some additional configuration options and their defaults:
   // theme: "default", // try "light", "dark", "slate", etc.
   // header: "", // what to show in the header (HTML)
