@@ -1,8 +1,8 @@
 import {createVotiPieChart} from "./votiPieChart.js";
 
 // Campi che devono essere presenti nel foglio Tableau
-const FIELD_GRADE = "End_Course_grade";
-const FIELD_LAUDE = "End_Course_Laude";
+const FIELD_GRADE = "End Course grade";
+const FIELD_LAUDE = "End Course Laude";
 
 function loadScript(src) {
   return new Promise((resolve, reject) => {
@@ -14,22 +14,29 @@ function loadScript(src) {
   });
 }
 
+const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
 // Converte la DataTable di Tableau in un array di oggetti {End_Course_grade, End_Course_Laude}
 function tableauToRows(dataTable) {
-  const idx = name => dataTable.columns.findIndex(c => c.fieldName.includes(name));
+  const names = dataTable.columns.map(c => c.fieldName);
+  const idx = name => names.findIndex(n => norm(n).includes(norm(name)));
   const iGrade = idx(FIELD_GRADE);
   const iLaude = idx(FIELD_LAUDE);
   if (iGrade < 0 || iLaude < 0) {
-    throw new Error(`Nel foglio mancano i campi ${FIELD_GRADE} e/o ${FIELD_LAUDE}`);
+    throw new Error(
+      `Campi non trovati. Cerco "${FIELD_GRADE}" e "${FIELD_LAUDE}", ` +
+      `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}`
+    );
   }
 
   return dataTable.data.map(row => {
     const g = row[iGrade].value;
     const l = row[iLaude].value;
-    const gradeIsNull = g === null || g === undefined || g === "%null%" || g === "";
+    const gradeIsNull = g === null || g === undefined || g === "" || g === "%null%" || Number.isNaN(+g);
     return {
-      [FIELD_GRADE]: gradeIsNull ? null : +g,
-      [FIELD_LAUDE]: l === true || String(l).toLowerCase() === "true"
+      // Queste chiavi restano con gli underscore: le usa votiPieChart.js
+      End_Course_grade: gradeIsNull ? null : +g,
+      End_Course_Laude: l === true || l === 1 || l === "1" || String(l).toLowerCase() === "true"
     };
   });
 }
