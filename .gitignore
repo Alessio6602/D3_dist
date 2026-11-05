@@ -1,5 +1,5 @@
 .DS_Store
 /dist/
 node_modules/
-/data/data_studenti.xlsx
+/src/data/data_studenti.xlsx
 yarn-error.log
