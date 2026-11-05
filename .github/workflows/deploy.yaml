@@ -1,4 +1,4 @@
-name: Deploy su GitHub Pages
+name: Deploying su GitHub Pages
 
 on:  # on: parte a ogni push su main (e a mano dal pulsante Run workflow)
   push:
