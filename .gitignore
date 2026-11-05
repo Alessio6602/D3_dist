@@ -1,10 +1,6 @@
 .DS_Store
 /dist/
 node_modules/
-<<<<<<< HEAD
 /src/data/data.studenti.xlsx
 /src/voti.md
-=======
-/src/data/data_studenti.xlsx
->>>>>>> 456c5f6bfaf6f051cb3d5cdb4b366dd74b03b4fe
 yarn-error.log
