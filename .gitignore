@@ -1,4 +1,6 @@
 .DS_Store
 /dist/
 node_modules/
+/src/data/data.studenti.xlsx
+/src/voti.md
 yarn-error.log
