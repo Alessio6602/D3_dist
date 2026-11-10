@@ -9,14 +9,23 @@ export function createVotiPieChart(data, {width = 500, height = 400, legendWidth
     d[GRADE] != null && d[GRADE] !== "" && !Number.isNaN(+d[GRADE]);
   const isLode = d => d[LAUDE] === true || d[LAUDE] === "true" || d[LAUDE] === 1 || d[LAUDE] === "1";
 
+  // 0. UNA RIGA PER STUDENTE
+  const studenti = Array.from(
+    d3.rollup(
+      data,
+      (righe) => righe.find(isLaureato) ?? righe[0],
+      (d) => d.Student_ID
+    ).values()
+  );
+
   // 1. DATI A DUE LIVELLI
   const dataMain = d3.rollups(
-    data,
+    studenti,
     v => v.length,
     d => isLaureato(d) ? "Laureato" : "In Corso / Non Laureato"
   );
 
-  const laureati = data.filter(isLaureato);
+  const laureati = studenti.filter(isLaureato);
   const dataLode = d3.rollups(
     laureati,
     v => v.length,
