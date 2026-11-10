@@ -5,3 +5,4 @@ node_modules/
 /src/data/
 /src/voti.md
 yarn-error.log
+/src/test.md
