@@ -2,7 +2,7 @@ import * as d3 from "npm:d3";
 
 export function createVotiPieChart(data, {width = 500, height = 400, legendWidth = 220} = {}) {
   // --- Adatta questi nomi alle colonne reali del tuo dataset ---
-  const GRADE = "End_Course_grade";
+  const GRADE = "Voto";
   const LAUDE = "End_Course_Laude";
 
   const isLaureato = d =>
