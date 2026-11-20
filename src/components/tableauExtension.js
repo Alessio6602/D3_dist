@@ -1,7 +1,7 @@
 import {createVotiPieChart} from "./votiPieChart.js";
 
 // Campi che devono essere presenti nel foglio Tableau
-const FIELD_GRADE = "End Course grade";
+const FIELD_GRADE = "Voto";
 const FIELD_LAUDE = "End Course Laude";
 
 function loadScript(src) {

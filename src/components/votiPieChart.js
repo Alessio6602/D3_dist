@@ -34,7 +34,7 @@ const dataLode = d3.rollups(
 
   const color = d3.scaleOrdinal()
     .domain(["In Corso / Non Laureato", "Laureato", "Laureato senza lode", "Laureato con lode"])
-    .range(["#4e73df", "#f6c23e", "#fd7e14", "#1cc88a"]);
+    .range(["#4e73df", "#fd7e14", "#fd7e14", "#1cc88a"]);
 
   const pie = d3.pie().value(d => d[1]).sort(null);
   const arc = d3.arc().innerRadius(innerRadius).outerRadius(radius);
