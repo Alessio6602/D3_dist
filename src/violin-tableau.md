@@ -37,7 +37,7 @@ display(container);
 startTableauViolin(container, {
   libUrl,
   worksheetName: "Studenti",   // <-- nome del foglio Tableau che fornisce i dati
-  bandwidth: 50,                    // <-- larghezza del kernel, in giorni (più alto = più liscio)
+  bandwidth: 100,                    // <-- larghezza del kernel, in giorni (più alto = più liscio)
   tempoMin: -2920                    // <-- scarta i tempi sotto questo valore (outlier)
 });
 ```
