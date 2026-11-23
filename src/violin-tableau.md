@@ -36,7 +36,7 @@ display(container);
 
 startTableauViolin(container, {
   libUrl,
-  worksheetName: "box plot esami",   // <-- nome del foglio Tableau che fornisce i dati
+  worksheetName: "Studenti",   // <-- nome del foglio Tableau che fornisce i dati
   bandwidth: 120,                    // <-- larghezza del kernel, in giorni (più alto = più liscio)
   tempoMin: -1000                    // <-- scarta i tempi sotto questo valore (outlier)
 });
