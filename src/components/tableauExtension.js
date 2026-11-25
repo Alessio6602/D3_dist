@@ -3,6 +3,7 @@ import {createVotiPieChart} from "./votiPieChart.js"; // file che genera il graf
 // Campi raccolti dal foglio Studenti
 const FIELD_GRADE = "Voto";
 const FIELD_LAUDE = "End_Course_Laude";
+const FIELD_STUDENT = "Student ID";
 
 //Carica la libreria Tableau
 function loadScript(src) {
@@ -17,29 +18,47 @@ function loadScript(src) {
 
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// Converte la DataTable di Tableau in un array di oggetti {End_Course_grade, End_Course_Laude}
+function findCol(names, name) {
+  const target = norm(name);
+  const exact = names.findIndex(n => norm(n) === target);
+  return exact >= 0 ? exact : names.findIndex(n => norm(n).includes(target));
+}
+
+// Converte la DataTable in un array di oggetti, UNA riga per studente
 function tableauToRows(dataTable) {
   const names = dataTable.columns.map(c => c.fieldName);
-  const idx = name => names.findIndex(n => norm(n).includes(norm(name)));
-  const iGrade = idx(FIELD_GRADE);
-  const iLaude = idx(FIELD_LAUDE);
-  if (iGrade < 0 || iLaude < 0) {
-    throw new Error( // Messaggio di errore se non trova i campi richiesti
-      `Campi non trovati. Cerco "${FIELD_GRADE}" e "${FIELD_LAUDE}", ` +
-      `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}` 
+  const iGrade = findCol(names, FIELD_GRADE);
+  const iLaude = findCol(names, FIELD_LAUDE);
+  const iStudent = findCol(names, FIELD_STUDENT);
+
+  if (iGrade < 0 || iLaude < 0 || iStudent < 0) {
+    throw new Error(
+      `Campi non trovati. Cerco "${FIELD_GRADE}", "${FIELD_LAUDE}" e "${FIELD_STUDENT}", ` +
+      `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}`
     );
   }
 
-  return dataTable.data.map(row => {
-    const g = row[iGrade].value;
+  const isNull = v => v === null || v === undefined || v === "" || v === "%null%";
+  const rows = [];
+  const seen = new Set(); // ID studente gia inseriti
+
+  for (const row of dataTable.data) {
+    const id = row[iStudent].value;
+
+    // Ogni riga e' un esame: tengo solo la prima riga di ciascuno studente
+    if (!isNull(id)) {
+      if (seen.has(id)) continue;
+      seen.add(id);
+    }
+
+  const g = row[iGrade].value;
     const l = row[iLaude].value;
-    const gradeIsNull = g === null || g === undefined || g === "" || g === "%null%" || Number.isNaN(+g);
-    return {
-      // Porta allo script i dati necessari per il grafico a ciambella col nome usato sul foglio excel
-      End_Course_grade: gradeIsNull ? null : +g,
+    rows.push({
+      End_Course_grade: isNull(g) || Number.isNaN(+g) ? null : +g,
       End_Course_Laude: l === true || l === 1 || l === "1" || String(l).toLowerCase() === "true"
-    };
-  });
+    });
+  }
+  return rows;
 }
 
 export async function startTableauPie(container, {libUrl, worksheetName}) {
