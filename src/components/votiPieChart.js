@@ -1,10 +1,10 @@
 import * as d3 from "npm:d3";
 
 export function createVotiPieChart(data, {width = 500, height = 400, legendWidth = 220} = {}) {
-  // --- Adatta questi nomi alle colonne reali del tuo dataset ---
   const GRADE = "End_Course_grade";
   const LAUDE = "End_Course_Laude";
 
+// Salva in variabili locali le funzioni per determinare se uno studente è laureato e/o laureato con lode
   const isLaureato = d =>
     d[GRADE] != null && d[GRADE] !== "" && !Number.isNaN(+d[GRADE]);
   const isLode = d => d[LAUDE] === true || d[LAUDE] === "true" || d[LAUDE] === 1 || d[LAUDE] === "1";
@@ -14,7 +14,7 @@ export function createVotiPieChart(data, {width = 500, height = 400, legendWidth
   v => v.length,
   d => isLaureato(d) ? "Laureato" : "In Corso / Non Laureato"
 );
-
+// Numero di laureati con e numero di lodi
 const laureati = data.filter(isLaureato);
 const dataLode = d3.rollups(
   laureati,
@@ -22,25 +22,28 @@ const dataLode = d3.rollups(
   d => isLode(d) ? "Laureato con lode" : "Laureato senza lode"
 );
 
+  // 2. CREAZIONE SVG
   const margin = 20;
   const radius = Math.min(width, height) / 2 - margin;
   const innerRadius = radius * 0.45;
-
+  
   const svg = d3.create("svg")
     .attr("width", width + legendWidth)
     .attr("height", height)
     .attr("viewBox", [-width / 2, -height / 2, width + legendWidth, height])
     .attr("style", "max-width: 100%; height: auto; display: block; font-family: sans-serif;");
-
+  // Colori per le fette della ciambella e legenda
   const color = d3.scaleOrdinal()
     .domain(["In Corso / Non Laureato", "Laureato", "Laureato senza lode", "Laureato con lode"])
     .range(["#4e73df", "#fd7e14", "#fd7e14", "#1cc88a"]);
 
+  // Generazione ciambella e posizionamento etichette
   const pie = d3.pie().value(d => d[1]).sort(null);
   const arc = d3.arc().innerRadius(innerRadius).outerRadius(radius);
   const arcHover = d3.arc().innerRadius(innerRadius).outerRadius(radius + 8);
   const arcLabel = d3.arc().innerRadius((radius + innerRadius) / 2).outerRadius((radius + innerRadius) / 2);
 
+  
   const chartGroup = svg.append("g");
   const labelGroup = svg.append("g")
     .attr("font-size", 12).attr("font-weight", "bold")
@@ -60,12 +63,13 @@ const dataLode = d3.rollups(
     .style("pointer-events", "none")
     .text("");
 
-  // 2. RENDERING
+  // 3. RENDERING
   function render(dataset, isSubChart) {
     const arcs = pie(dataset);
     const key = d => d.data[0];
 
-    // --- Fette ---
+    // Fette
+    // Cambio dinamico dei dati con transizione, gestione di enter/update/exit
     const paths = chartGroup.selectAll("path:not(.exiting)")
       .data(arcs, key)
       .join(
@@ -100,7 +104,7 @@ const dataLode = d3.rollups(
         return t => arc(i(t));
       });
 
-    // --- Etichette numeriche ---
+    // Etichette dinamiche
     labelGroup.selectAll("text:not(.exiting)")
       .data(arcs, key)
       .join(
@@ -117,7 +121,7 @@ const dataLode = d3.rollups(
       .style("opacity", 1)
       .attr("transform", d => `translate(${arcLabel.centroid(d)})`);
 
-    // --- Legenda dinamica ---
+    // Legenda dinamica
     legendGroup.selectAll("g:not(.exiting)")
       .data(dataset.map(d => d[0]), d => d)
       .join(
@@ -138,7 +142,7 @@ const dataLode = d3.rollups(
       .style("opacity", 1)
       .attr("transform", (d, i) => `translate(0, ${i * 25})`);
 
-    // --- Pulsante indietro ---
+    // Pulsante indietro
     centerText.interrupt();
     if (isSubChart) {
       centerText

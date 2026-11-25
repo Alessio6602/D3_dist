@@ -28,16 +28,17 @@ pager: false
 
 
 ```js
-import {startTableauViolin} from "./components/tableauViolin.js";
+import {startTableauViolin} from "./components/tableauViolin.js"; // script da caricare
 
 const libUrl = await FileAttachment("tableau.extensions.1.latest.min.js").url();
+// file che apre il canale di comunicazione con tableau
 const container = html`<div id="chart"></div>`;
 display(container);
 
 startTableauViolin(container, {
   libUrl,
-  worksheetName: "Studenti",   // <-- nome del foglio Tableau che fornisce i dati
-  bandwidth: 100,                    // <-- larghezza del kernel, in giorni (più alto = più liscio)
-  tempoMin: -2920                    // <-- scarta i tempi sotto questo valore (outlier)
+  worksheetName: "Studenti",   // foglio Tableau
+  bandwidth: 100,              // larghezza del kernel, in giorni 
+  tempoMin: -2920              // scarta gli esami diventati obsoleti, come per gli altri grafici su tableau
 });
 ```

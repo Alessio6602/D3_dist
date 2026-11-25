@@ -1,9 +1,10 @@
-import {createVotiPieChart} from "./votiPieChart.js";
+import {createVotiPieChart} from "./votiPieChart.js"; // file che genera il grafico a ciambella
 
-// Campi che devono essere presenti nel foglio Tableau
+// Campi raccolti dal foglio Studenti
 const FIELD_GRADE = "Voto";
 const FIELD_LAUDE = "End_Course_Laude";
 
+//Carica la libreria Tableau
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const s = document.createElement("script");
@@ -23,9 +24,9 @@ function tableauToRows(dataTable) {
   const iGrade = idx(FIELD_GRADE);
   const iLaude = idx(FIELD_LAUDE);
   if (iGrade < 0 || iLaude < 0) {
-    throw new Error(
+    throw new Error( // Messaggio di errore se non trova i campi richiesti
       `Campi non trovati. Cerco "${FIELD_GRADE}" e "${FIELD_LAUDE}", ` +
-      `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}`
+      `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}` 
     );
   }
 
@@ -34,7 +35,7 @@ function tableauToRows(dataTable) {
     const l = row[iLaude].value;
     const gradeIsNull = g === null || g === undefined || g === "" || g === "%null%" || Number.isNaN(+g);
     return {
-      // Queste chiavi restano con gli underscore: le usa votiPieChart.js
+      // Porta allo script i dati necessari per il grafico a ciambella col nome usato sul foglio excel
       End_Course_grade: gradeIsNull ? null : +g,
       End_Course_Laude: l === true || l === 1 || l === "1" || String(l).toLowerCase() === "true"
     };

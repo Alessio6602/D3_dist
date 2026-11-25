@@ -1,10 +1,11 @@
 import {createViolinPlot} from "./violinPlot.js";
 
-// Campi che devono essere presenti nel foglio Tableau
+// Campi raccolti dal foglio Studenti
 const FIELD_TEMPO = "Days End Class Exam Done";
 const FIELD_ESAME = "Esame";
 const FIELD_STUDENTE = "Student ID";
 
+//Carica la libreria Tableau
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const s = document.createElement("script");
@@ -17,7 +18,7 @@ function loadScript(src) {
 
 const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// Cerca la colonna: prima il nome identico, poi un nome che lo contiene (es. "MEDIA(Days End Class Exam Done)")
+// Cerca la colonna: prima il nome identico, poi un nome che lo contiene (es. "MEDIA(...)")
 function findColumn(names, field) {
   const target = norm(field);
   const exact = names.findIndex(n => norm(n) === target);
@@ -31,12 +32,12 @@ function tableauToRows(dataTable) {
   const iEsame = findColumn(names, FIELD_ESAME);
   const iStudente = findColumn(names, FIELD_STUDENTE);
   if (iTempo < 0 || iEsame < 0 || iStudente < 0) {
-    throw new Error(
+    throw new Error( // Messaggio di errore se non trova i campi richiesti
       `Campi non trovati. Cerco "${FIELD_TEMPO}", "${FIELD_ESAME}" e "${FIELD_STUDENTE}", ` +
       `ma il foglio contiene: ${names.join(", ") || "(nessuna colonna)"}`
     );
   }
-
+  // campi passati al grafico violinPlot.js: {esame, studente, tempo}
   return dataTable.data
     .map(row => ({
       tempo: parseFloat(row[iTempo].value),   // "%null%" diventa NaN e viene scartato
@@ -65,8 +66,9 @@ export async function startTableauViolin(container, {libUrl, worksheetName, band
     return;
   }
 
-  let seq = 0; // scarta le risposte arrivate in ritardo se i filtri cambiano in fretta
-
+  let seq = 0; 
+  // scarta le risposte arrivate in ritardo se i filtri cambiano in fretta
+  // dovuto alla pesantezza del calcolo della stima di densità con kernel di Epanechnikov
   async function refresh() {
     const mine = ++seq;
     try {
@@ -81,7 +83,7 @@ export async function startTableauViolin(container, {libUrl, worksheetName, band
 
   await refresh();
 
-  // Aggiorna il grafico quando cambiano i filtri o i parametri della dashboard (es. "Semestre Scelto")
+  // Aggiorna il grafico quando cambiano i filtri o i parametri della dashboard 
   const T = tableau.TableauEventType;
   worksheet.addEventListener(T.FilterChanged, refresh);
   if (T.SummaryDataChanged) worksheet.addEventListener(T.SummaryDataChanged, refresh);

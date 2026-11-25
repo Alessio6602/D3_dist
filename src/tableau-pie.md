@@ -7,9 +7,8 @@ toc: false
 pager: false
 ---
 
-
 <style>
-  html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; }
+  html, body { margin: 0; padding: 0; overflow: hidden; background: transparent; } 
   #observablehq-center { margin: 0; padding: 0; }
   #observablehq-main { max-width: none; margin: 0; padding: 8px; }
   #chart {
@@ -28,14 +27,15 @@ pager: false
 
 
 ```js
-import {startTableauPie} from "./components/tableauExtension.js";
+import {startTableauPie} from "./components/tableauExtension.js"; // script da caricare
 
-const libUrl = await FileAttachment("tableau.extensions.1.latest.min.js").url();
+const libUrl = await FileAttachment("tableau.extensions.1.latest.min.js").url(); 
+// file che apre il canale di comunicazione con tableau
 const container = html`<div></div>`;
 display(container);
 
 startTableauPie(container, {
   libUrl,
-  worksheetName: "Studenti"   // <-- nome del foglio Tableau che fornisce i dati
+  worksheetName: "Studenti"  // foglio Tableau
 });
 ```
